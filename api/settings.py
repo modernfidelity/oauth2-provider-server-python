@@ -43,7 +43,6 @@ INSTALLED_APPS = [
 
     # VENDOR
     'django_extensions',
-    'debug_toolbar',
     'storages',
 
     # OAUTH2 Toolkit
@@ -51,11 +50,7 @@ INSTALLED_APPS = [
 
     # REST Framework
     'rest_framework',
-    'rest_framework_swagger',
     'corsheaders',
-
-    # CUSTOM
-    # 'accounts',
 
 ]
 
@@ -117,9 +112,6 @@ REST_FRAMEWORK = {
         # DOT
         'oauth2_provider.ext.rest_framework.OAuth2Authentication',
 
-        # 'rest_framework.authentication.SessionAuthentication',
-        # 'rest_framework.authentication.BasicAuthentication',
-        # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     ),
 
     # Global pagination (http://www.django-rest-framework.org/api-guide/pagination/)
@@ -201,50 +193,20 @@ USE_TZ = True
 # CORS
 CORS_ORIGIN_ALLOW_ALL = True
 
-# AMAZON S3 FILESYSTEM (@see ../custom_storages.py)
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.9/howto/static-files/
-
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-# STATIC_URL = '/static/'
-
-# Media Files (User Generated)
-
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-# MEDIA_URL = '/media/'
-
-
 AWS_ACCESS_KEY_ID = os.environ.get('DRF_AWS_ACCESS_KEY')
 AWS_SECRET_ACCESS_KEY = os.environ.get('DRF_AWS_SECRET_KEY')
-
-# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-
 AWS_STORAGE_BUCKET_NAME = os.environ.get('DRF_AWS_S3_BUCKET')
 
 AWS_S3_CUSTOM_DOMAIN = "s3-eu-west-1.amazonaws.com/%s" % AWS_STORAGE_BUCKET_NAME
 
 # Fixes issue with calling format (can be OrdinaryCallingFormat as well)
-# from boto.s3.connection import ProtocolIndependentOrdinaryCallingFormat
-# AWS_S3_CALLING_FORMAT = ProtocolIndependentOrdinaryCallingFormat()
 AWS_S3_CALLING_FORMAT = 'boto.s3.connection.OrdinaryCallingFormat'
 
 # Fixes issue with region hosting
 from boto.s3.connection import S3Connection
 
 S3Connection.DefaultHost = 's3-eu-west-1.amazonaws.com'
-
 AWS_S3_HOST = 's3-eu-west-1.amazonaws.com'
-
-# This is used by the `static` template tag from `static`, if you're using that. Or if anything else
-# refers directly to STATIC_URL. So it's safest to always set it.
-# STATIC_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
-#
-# # Tell the staticfiles app to use S3Boto storage when writing the collected static files (when
-# # you run `collectstatic`).
-# STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-
 
 # STATIC Files
 STATICFILES_LOCATION = 'static'
@@ -256,6 +218,7 @@ MEDIAFILES_LOCATION = 'media'
 MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION)
 DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
 
+# User flows
 LOGIN_URL = 'accounts/login/'
 LOGIN_REDIRECT_URL = 'accounts/login/'
 LOGOUT_URL = '/logout/'

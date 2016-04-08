@@ -27,17 +27,9 @@ from rest_framework import permissions, routers, serializers, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-
-# from rest_framework_jwt.views import obtain_jwt_token
-# from rest_framework_jwt.views import refresh_jwt_token
-# from rest_framework_jwt.views import verify_jwt_token
-
 from settings import API_VERSION, DEBUG
-
 from oauth2_provider.ext.rest_framework import TokenHasReadWriteScope, TokenHasScope
-
 from api import views
-
 
 
 @api_view(['GET'])
@@ -46,25 +38,37 @@ def get_api_version(request):
     return Response({API_VERSION})
 
 
-# first we define the serializers
+# Define the serializers
 class UserSerializer(serializers.ModelSerializer):
+    """
+    User Serializer (DRF)
+    """
     class Meta:
         model = User
 
 
 class GroupSerializer(serializers.ModelSerializer):
+    """
+    Group Serializer (DRF)
+    """
     class Meta:
         model = Group
 
 
 # ViewSets define the view behavior.
 class UserViewSet(viewsets.ModelViewSet):
+    """
+    User View
+    """
     permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
 class GroupViewSet(viewsets.ModelViewSet):
+    """
+    Group View
+    """
     permission_classes = [permissions.IsAuthenticated, TokenHasScope]
     required_scopes = ['groups']
     queryset = Group.objects.all()
@@ -76,6 +80,7 @@ router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'groups', GroupViewSet)
 
+# Main URLs
 urlpatterns = [
 
     # System
@@ -90,31 +95,17 @@ urlpatterns = [
     # OAUTH2 Toolkit (Authentication Server)
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),  # OAUTH2 Provider
 
-    url(r'^verify-token', views.verify_token),
+    # Verify Bearer token from clients
+    url(r'^verify-token', views.verify_token, name='verify_token'),
 
-
-    url(r'^secret', views.secret_page),
-    # JWT Auth Token
-    # url(r'^api-token-auth/', obtain_jwt_token),
-    # url(r'^api-token-verify/', verify_jwt_token),
-    # url(r'^api-token-refresh/', refresh_jwt_token),
-
-   # API
+    # API
     url(r'^', include(router.urls)),
 
     # Accounts App
     # url(r'^accounts/', include('accounts.urls')),
     url(r'^accounts/', include('registration.backends.hmac.urls')),
 
-
-
 ]
-
-# Accounts
-# urlpatterns += [
-#     url(r'^accounts/login', views.login),
-#
-# ]
 
 # On DEV server serve the local media files
 if DEBUG:
